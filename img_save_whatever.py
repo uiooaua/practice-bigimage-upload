@@ -1,16 +1,3 @@
-'''from PIL import Image
-
-# 画像オブジェクトを生成
-# 引数にはfilenameかfile like objectが入る
-img = Image.open('test-dog.jpg')
-
-# リサイズ処理　引数は(width, height)のタプル
-resized = img.resize((256,256))
-
-# 画像の保存
-resized.save('dog_resized.png')
-'''
-
 from google.cloud import storage
 from PIL import Image
 import io
