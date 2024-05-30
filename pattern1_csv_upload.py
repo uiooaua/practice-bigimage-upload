@@ -29,12 +29,12 @@ def change_suffix(file_name, from_suffix, to_suffix):
         #ファイル名を変更する
         shutil.move(file_name, to_name)
 
-if __name__ == '__main__':
-    change_suffix('./image/test-cat.jpg', '.jpg', '.csv')
+    return to_name
 
+if __name__ == '__main__':
     # バケット名の指定
     bucket = storage_client.get_bucket('test-iterra')
     # バケット内のファイル名の指定 
     blob = bucket.blob('try-csv.csv') 
     # ローカルファイル名の指定
-    blob.upload_from_filename('./image/test-cat.jpg')
+    blob.upload_from_filename(change_suffix('joined_20230911_0945_50m_TADECO_MAP1.tif', '.tif', '.csv'))
