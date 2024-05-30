@@ -1,5 +1,5 @@
-import pathlib
-import shutil
+import io
+from PIL import Image
 from google.cloud import storage
 from google.oauth2 import service_account
 
@@ -12,7 +12,8 @@ storage_client = storage.Client(
         credentials = credentials,
         project = credentials.project_id,
     )
-'''
+
+#メモリからオブジェクトをアップロードする公式sample code
 def upload_blob_from_memory(bucket_name, contents, destination_blob_name):
 
     storage_client = storage.Client(
@@ -26,6 +27,13 @@ def upload_blob_from_memory(bucket_name, contents, destination_blob_name):
     blob.upload_from_string(contents)
 
     print(
-        f"{destination_blob_name} with contents {contents} uploaded to {bucket_name}."
+        f"{destination_blob_name} uploaded."
     )
-'''
+
+with open('./image/test-dog.jpg', 'rb') as image_file:
+    binary_data = image_file.read()
+
+    bucket_name = 'test-iterra'
+    destination_blob_name = 'pattern2-try-sample.csv'
+    
+    upload_blob_from_memory(bucket_name, binary_data, destination_blob_name)
