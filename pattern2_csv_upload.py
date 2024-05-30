@@ -13,7 +13,7 @@ storage_client = storage.Client(
         project = credentials.project_id,
     )
 
-#メモリからオブジェクトをアップロードする公式sample code
+#メモリからオブジェクトをアップロードする（公式より）
 def upload_blob_from_memory(bucket_name, contents, destination_blob_name):
 
     storage_client = storage.Client(
@@ -22,15 +22,18 @@ def upload_blob_from_memory(bucket_name, contents, destination_blob_name):
     )
 
     bucket = storage_client.bucket(bucket_name)
+    # create blob object
     blob = bucket.blob(destination_blob_name)
-
+    # upload binary data
     blob.upload_from_string(contents)
 
     print(
         f"{destination_blob_name} uploaded."
     )
 
+# ローカルの画像ファイルをバイナリとして読み込む
 with open('./image/test-dog.jpg', 'rb') as image_file:
+    # ファイルの中身を読み込み変数に格納している
     binary_data = image_file.read()
 
     bucket_name = 'test-iterra'
