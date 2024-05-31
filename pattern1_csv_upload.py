@@ -1,40 +1,45 @@
-import pathlib
-import shutil
+import csv
+import os
 from google.cloud import storage
 from google.oauth2 import service_account
 
 # ストレージクライアントの取得
 credentials = service_account.Credentials.from_service_account_file(
-    'banana-ojt-d74de788e054.json', # サービスアカウントキー名の指定
+    'banana-ojt-d74de788e054.json',  # サービスアカウントキー名の指定
     scopes=['https://www.googleapis.com/auth/devstorage.read_write'],
 )
-storage_client = storage.Client(
-        credentials = credentials,
-        project = credentials.project_id,
+
+def upload_blob_from_file(bucket_name, source_file_name, destination_blob_name):
+    storage_client = storage.Client(
+        credentials=credentials,
+        project=credentials.project_id,
     )
 
-#画像ファイルデータをCSV形式に変更する 
-def change_suffix(file_name, from_suffix, to_suffix):
-    #ファイルの拡張子を得る
-    sf = pathlib.PurePath(file_name).suffix
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
 
-    #変更対象か判断する
-    if sf == from_suffix:
-        #拡張子を除くファイル名を得る
-        st = pathlib.PurePath(file_name).stem
+    blob.upload_from_filename(source_file_name)
 
-        #変更後のファイル名を得る
-        to_name = st + to_suffix
+    print(f"{destination_blob_name} uploaded from {source_file_name}.")
 
-        #ファイル名を変更する
-        shutil.move(file_name, to_name)
+# 座標リストをローカルに保存し、アップロードする
+try:
+    result = [[123, 456], [111, 222], [333, 444], [999, 999]]
+    local_csv_file = 'result.csv'
+    
+    # リストをCSV形式のファイルに保存
+    with open(local_csv_file, mode='w', newline='') as file:
+        csv_writer = csv.writer(file)
+        csv_writer.writerows(result)
 
-    return to_name
+    destination_blob_name = 'result_pattern1.csv'
+    bucket_name = 'test-iterra'
+    
+    # ローカルのCSVファイルをGoogle Cloud Storageにアップロード
+    upload_blob_from_file(bucket_name, local_csv_file, destination_blob_name)
 
-if __name__ == '__main__':
-    # バケット名の指定
-    bucket = storage_client.get_bucket('test-iterra')
-    # バケット内のファイル名の指定 
-    blob = bucket.blob('try-csv.csv') 
-    # ローカルファイル名の指定
-    blob.upload_from_filename(change_suffix('joined_20230911_0945_50m_TADECO_MAP1.tif', '.tif', '.csv'))
+    # アップロード後にローカルファイルを削除（オプション）
+    os.remove(local_csv_file)
+
+except Exception as e:
+    print(f"Error: {e}")
